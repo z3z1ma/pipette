@@ -27,7 +27,7 @@ Consider the below config file, we will call it `salesforce.yml`
 ```yaml
 version: 2
 
-config:
+targets:
 
   leads:
 
@@ -117,13 +117,13 @@ Refresh and Append strategies are self explanatory. Merge is unique so lets look
 ```yaml
 version: 2
 
-config:
+targets:
 
   leads:
 
     ...previous configs above 
 
-    rdsProdDatabase_leadSource:
+    rdsDb_leadSource:
       adapter: postgres
       jdbc: jdbc:postgresql://${PGHOST}:${PGPORT}/analytics?user=eltServiceAcct&password=${PGPASSWORD}
       schema: salesforce
@@ -143,7 +143,7 @@ config:
 
 With an explicit storage strategy, we explicitly define top level keys expected in the incoming new line delimited JSON to parse out. This enables us to define a pk which is an identifier that makes a record unique. Pipette will then handle merge strategies if directed whenever piping data into the data warehouse. Perhaps now we only emit last 3 days of activity if our emitter supports it:
 
-`emit salesforce leads --recent=3 | java -jar pipette.jar rdsProdDatabase_leadSource --config-file salesforce.yml --target leads`
+`emit salesforce leads --recent=3 | java -jar pipette.jar rdsDb_leadSource --config-file="salesforce.yml" --target="leads"`
 
 Pipette will update records accordingly. 
 
@@ -156,10 +156,13 @@ The below will pull bitcoin transactions into a database table.
 echo '
 version: 2
 targets:
+
   # targets, somewhat akin to namespaces
   cryptoTransactions:
-    # a target can have multiple destinations
+
+    # here is a destination, a target can have multiple destinations
     localDatabase:
+
       adapter: postgres
       # update the jdbc to your own
       jdbc: jdbc:postgresql://localhost:5432/test?user=alex&password=${PGPASSWORD}
