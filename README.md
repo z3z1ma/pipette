@@ -53,11 +53,11 @@ emit salesforce leads | java -jar pipette.jar rdsProdDatabase --config-file sale
 docker exec -i pipette rdsProdDatabase --config-file salesforce.yml --target leads < emit salesforce leads
 ```
 
-Breaking that command down, we have this structure:
+Breaking our command down, we have this structure:
 
 `java -jar pipette.jar [destinations] --config-file="[path/to/config]" --target="[target]"`
 
-Breaking the config down, we have this structure with peices correlating to the above command:
+Using the structure above, we can correlate it directly to the YAML to better understand how pipette targets/destinations are selected:
 
 ```
 version: 2
@@ -67,6 +67,7 @@ targets:
       [config]
     [destination]:
       [config]
+
   [target]:
     [destination]:
       [config]
@@ -74,7 +75,7 @@ targets:
       [config]
 ```
 
-With adjustments to the YAML config example we showed initially, one can easily imagine a pipeline like the below keeping a staging database in sync with a production db with a single API pull. Or routing a single source of truth into 2 completely different databases like Postgres and Snowflake.
+With adjustments to the YAML config example we showed initially, one can easily imagine a pipeline like the following which is keeping a staging database in sync with a production db with a single API pull. Or imagine an invocation routing a single source of truth into 2 completely different databases like Postgres and Snowflake.
 
 ```sh
 # Multi destination command
@@ -129,7 +130,7 @@ config:
       target: lead_source
       storage-strategy: explicit
       ingestion-strategy: merge
-=      columns:
+      columns:
         - name: Id
           pk: true  # <- A pk marked column is required for merge strat
         - name: Name
@@ -167,6 +168,7 @@ targets:
       storage-strategy: json
       ingestion-strategy: append
 ' > cfg.yml
+
 curl "https://api.coincap.io/v2/assets/bitcoin/history?interval=d1" | 
   java -jar pipette localDatabase \
     --config-file="cfg.yml" \
@@ -191,6 +193,7 @@ sources:
       - name: cypto_trans
         description: Bitcoin transactions extracted from api.coincap.io
 " > models/stg_cypto_trans.yml
+
 echo "
 with source as (
   select * from {{source('bitcambio', 'cypto_trans')}}
