@@ -59,6 +59,7 @@
 (def jq-exe (cond
               (clojure.string/includes? sys-type "Windows") "jq-win64.exe"
               (clojure.string/includes? sys-type "Darwin") "jq-osx-amd64"
+              (clojure.string/includes? sys-type "Mac") "jq-osx-amd64"
               :else "jq-linux64"))
 
 (defn copy-uri-to-file [uri file]
